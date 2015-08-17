@@ -1,6 +1,7 @@
 package com.cdzmqm;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -8,20 +9,67 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Request {
-	public static String getData(String url,String method,String tmp)
+	public static String doPost(String url,String param)
 	{
-		String data = null;
+		String data = "";
 		try {
 			URL u = new URL(url);
 			URLConnection uc = u.openConnection();
-			if(method.toLowerCase() == "GET"){
-				System.out.println("get");
-			} else if(method.toLowerCase() == "POST"){
-				uc.setDoOutput(true);
-				
-				System.out.println("post");
+			uc.setDoOutput(true);
+			PrintWriter out = new PrintWriter(uc.getOutputStream());
+			out.write(param);
+			out.flush();
+			out.close();
+			Scanner scanner = new Scanner(uc.getInputStream());
+			while(scanner.hasNextLine()) {
+				data += scanner.nextLine()+"\r\n";
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			data = "error";
+			e.printStackTrace();
+		}
+		return data;
+	}
+	public static String doPost(String url,String param,HashMap<String,String> advance)
+	{
+		String data = "";
+		try {
+			URL u = new URL(url);
+			URLConnection uc = u.openConnection();
+			uc.setDoOutput(true);
+			Set<Map.Entry<String, String>> headers = advance.entrySet();
+			for (Map.Entry<String, String> header: headers)
+			{
+				uc.setRequestProperty(header.getKey(),header.getValue());
+			}
+			PrintWriter out = new PrintWriter(uc.getOutputStream());
+			out.write(param);
+			out.flush();
+			out.close();
+			Scanner scanner = new Scanner(uc.getInputStream());
+			while(scanner.hasNextLine()) {
+				data += scanner.nextLine()+"\r\n";
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			data = "error";
+			e.printStackTrace();
+		}
+		return data;
+	}
+	public static String doGet(String url)
+	{
+		String data = "";
+		try {
+			URL u = new URL(url);
+			InputStream in = u.openStream();
+			Scanner scanner = new Scanner(in);
+			while(scanner.hasNextLine()) {
+				data += scanner.nextLine()+"\r\n";
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -29,16 +77,21 @@ public class Request {
 		}
 		return data;
 	}
-	public static String getData(String url)
+	public static String doGet(String url,HashMap<String,String> advance)
 	{
-		String data = null;
+		String data = "";
 		try {
 			URL u = new URL(url);
-			InputStream in = u.openStream();
-			Scanner scanner = new Scanner(in);
-			while(scanner.hasNext()) {
-				data += scanner.nextLine();
-			}	
+			URLConnection uc = u.openConnection();
+			Set<Map.Entry<String, String>> headers = advance.entrySet();
+			for (Map.Entry<String, String> header: headers)
+			{
+				uc.setRequestProperty(header.getKey(),header.getValue());
+			}
+			Scanner scanner = new Scanner(uc.getInputStream());
+			while(scanner.hasNextLine()) {
+				data += scanner.nextLine()+"\r\n";
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			data = "error";
