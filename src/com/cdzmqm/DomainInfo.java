@@ -20,7 +20,7 @@ import org.xbill.DNS.*;
 public class DomainInfo{
 	public static void main(String[] args) throws Exception 
 	{
-		int threads=20;int option=0;
+		int threads=50;int option=0;
 		if(args.length<1)
 		{
 			System.out.println("------------------------------------------------------");
